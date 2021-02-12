@@ -18,4 +18,4 @@ pub use crate::api::fetch_address;
 pub use crate::cli::run;
 pub use crate::errors::KenallError;
 pub use crate::model::PostalCodeResponse;
-pub use crate::ui::UI;
+pub use crate::ui::Ui;
