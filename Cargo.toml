@@ -1,0 +1,32 @@
+[package]
+name = "kenall-rs"
+description = "A commandline tool for Kenall"
+homepage = "https://kenall.jp/"
+documentation = "https://www.notion.so/API-47ab1a425d9e48aaad5b34b4f703c718"
+repository = "https://github.com/chansuke/kenall-rs"
+keywords = ["kenall", "cli", "api"]
+categories = ["command-line-utilities"]
+license = "MIT OR Apache-2.0"
+version = "0.1.0"
+authors = ["chansuke <moonset20@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+structopt = "0.3.21"
+anyhow = "1.0.38"
+thiserror = "1.0.23"
+dotenv = "0.15.0"
+pretty_assertions = "0.6.1"
+reqwest = { version = "0.11.0", features = ["blocking", "json"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1.0.123", features = ["derive"] }
+serde_json = "1.0.62"
+ansi_term = "0.12.1"
+cli-table = "0.4"
+assert_cmd = "1.0.3"
+predicates = "1"
+
+[[bin]]
+bench = false
+path = "src/main.rs"
+name = "kenall-rs"
