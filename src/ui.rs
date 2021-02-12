@@ -5,13 +5,13 @@ use cli_table::{format::Justify, print_stdout, Cell, CellStruct, Style, Table};
 
 use crate::PostalCodeResponse;
 
-pub trait UI {
+pub trait Ui {
     fn display_address(&self);
     fn display_corporate(&self);
     fn justify_content(data: &str, position: Justify) -> CellStruct;
 }
 
-impl UI for PostalCodeResponse {
+impl Ui for PostalCodeResponse {
     fn display_address(&self) {
         let rawdata = &self.data[0];
         let address_table = vec![
