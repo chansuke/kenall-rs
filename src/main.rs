@@ -4,7 +4,10 @@ use structopt::{clap, StructOpt};
 use kenall_rs::run;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "kenall-rs", about = "A command line tool for Kenall written in Rust")]
+#[structopt(
+    name = "kenall-rs",
+    about = "A command line tool for Kenall written in Rust"
+)]
 /// Show help with no argument
 #[structopt(setting(clap::AppSettings::ArgRequiredElseHelp))]
 struct Opt {
