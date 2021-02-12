@@ -1,5 +1,5 @@
 # kenall-rs
-![Cargo Test](https://github.com/chansuke/kenall-rs/workflows/Cargo%20Test/badge.svg)
+![Cargo Test](https://github.com/chansuke/kenall-rs/workflows/Cargo%20Test/badge.svg) ![License](https://img.shields.io/badge/license-MIT%20or%20Apache%202%20-orange)
 ## About The Project
 kenall-rs is an **UNOFFICIAL** command line tool for [KENALL](https://kenall.jp/) providing `REST API` that enables to search the addresses from postal code straightforward and efficient.
 
