@@ -13,7 +13,7 @@ pub fn run(code: &str) {
     let result = fetch_address(&postal_code).unwrap();
 
     if result.data.is_empty() {
-        eprintln!("Sorry, There was no address associated with the post code");
+        eprintln!("Sorry, there was no address associated with the post code");
         process::exit(1);
     }
 
