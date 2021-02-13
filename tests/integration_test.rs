@@ -12,6 +12,18 @@ fn include_none_didit() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
+fn no_result_found() -> Result<(), Box<dyn std::error::Error>> {
+    let mut cmd = Command::cargo_bin("kenall-rs")?;
+    cmd.arg("9999999");
+
+    cmd.assert().failure().stderr(predicate::str::contains(
+        "Sorry, there was no address associated with the post code",
+    ));
+
+    Ok(())
+}
+
+#[test]
 fn more_than_seven_digits() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("kenall-rs")?;
     cmd.arg("1000012909090909090");
