@@ -46,3 +46,4 @@ jobs:
     - run: sudo apt update -y && sudo apt install gcc-multilib libsecret-1-0 libsecret-1-dev -y
       if: matrix.os == 'ubuntu-latest'
     - run: cargo test
+    - uses: codecov/codecov-action@v1.2.1
