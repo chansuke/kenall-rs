@@ -4,8 +4,16 @@
 kenall-rs is an **UNOFFICIAL** command line tool for [KENALL](https://kenall.jp/) providing `REST API` that enables to search the addresses from postal code straightforward and efficient.
 
 ## Installation
+### From crates.io
+
 ```sh
 cargo install kenall-rs
+```
+
+### From latest main branch commit
+
+```sh
+cargo install --git https://github.com/chansuke/kenall-rs --branch main
 ```
 
 ## Usage
