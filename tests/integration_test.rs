@@ -12,6 +12,25 @@ fn include_none_didit() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
+fn normal_eight_digit() -> Result<(), Box<dyn std::error::Error>> {
+    let mut cmd = Command::cargo_bin("kenall-rs")?;
+    cmd.arg("1000001");
+    cmd.assert().stdout(predicate::str::contains("千代田区"));
+
+    Ok(())
+}
+
+#[test]
+fn kyoto_street_address() -> Result<(), Box<dyn std::error::Error>> {
+    let mut cmd = Command::cargo_bin("kenall-rs")?;
+    cmd.arg("6048012");
+    cmd.assert()
+        .stdout(predicate::str::contains("先斗町通三条下る"));
+
+    Ok(())
+}
+
+#[test]
 fn no_result_found() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("kenall-rs")?;
     cmd.arg("9999999");

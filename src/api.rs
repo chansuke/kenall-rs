@@ -116,16 +116,20 @@ mod tests {
         assert_eq!(result.data[2].koaza, "第４地割");
     }
 
-    /// Example in the [document](https://codepen.io/kenall/pen/NWbPYda) `京都の通り名を含む例` is incollect?
-    /// `6408012` returns the address of Wakayama prefecture.
-    ///
-    /// Found the example from below.
-    /// http://www13.plala.or.jp/bigdata/kyoto.html
+    /// You can find the good example in the [demo page](https://codepen.io/kenall/pen/NWbPYda).
+    /// > 京都の通り名を含む例
     #[test]
-    fn include_kyoto_street() {
+    fn include_kyoto_streetname_one() {
         let postal_code = "6048063";
         let result = fetch_address(postal_code).unwrap();
         assert_eq!(result.data[1].kyoto_street, "蛸薬師通麸屋町西入");
+    }
+
+    #[test]
+    fn include_kyoto_streetname_two() {
+        let postal_code = "6048012";
+        let result = fetch_address(postal_code).unwrap();
+        assert_eq!(result.data[1].kyoto_street, "先斗町通三条下る");
     }
 
     #[test]
