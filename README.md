@@ -1,5 +1,5 @@
 # kenall-rs
-![Cargo Test](https://github.com/chansuke/kenall-rs/workflows/Cargo%20Test/badge.svg) ![License](https://img.shields.io/badge/license-MIT%20or%20Apache%202%20-orange) ![cargo.rs](https://docs.rs/kenall-rs/badge.svg?version=0.1.0)
+![Cargo Test](https://github.com/chansuke/kenall-rs/workflows/Cargo%20Test/badge.svg) ![License](https://img.shields.io/badge/license-MIT%20or%20Apache%202%20-orange) [![kenall-rs at crates.io](https://img.shields.io/crates/v/kenall-rs.svg)](https://crates.io/crates/crate-name) ![kenall-rs at doc.rs](https://docs.rs/kenall-rs/badge.svg?version=0.1.0)
 ## About The Project
 kenall-rs is an **UNOFFICIAL** command line tool for [KENALL](https://kenall.jp/) providing `REST API` that enables to search the addresses from postal code straightforward and efficient.
 
