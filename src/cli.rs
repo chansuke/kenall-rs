@@ -1,8 +1,8 @@
 use std::process;
 
-use crate::{api::fetch_address, Ui};
+use crate::{api::fetch_address, KenallError, PostalCodeResponse};
 
-pub fn run(code: &str) {
+pub fn run(code: &str) -> Result<PostalCodeResponse, KenallError> {
     let postal_code = code.replace("-", "");
 
     if postal_code.len() != 7 {
@@ -10,12 +10,7 @@ pub fn run(code: &str) {
         process::exit(1);
     }
 
-    let result = fetch_address(&postal_code).unwrap();
+    let result = fetch_address(&postal_code)?;
 
-    if result.data.is_empty() {
-        eprintln!("Sorry, there was no address associated with the post code");
-        process::exit(1);
-    }
-
-    Ui::display_address(&result);
+    Ok(result)
 }
