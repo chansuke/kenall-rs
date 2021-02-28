@@ -151,4 +151,30 @@ mod tests {
         assert_eq!(cooporation.code_type, 0);
         assert_eq!(cooporation.block_lot, "２丁目１－２");
     }
+
+    /// Parse `甲、乙`
+    #[test]
+    fn parse_comma_delimiter() {
+        let postal_code = "7614103";
+        let result = fetch_address(postal_code).unwrap();
+        let town_raw = &result.data[0].town_raw;
+        assert_eq!(town_raw, "甲、乙（大木戸）");
+    }
+
+    #[test]
+    fn parse_north_award() {
+        let postal_code = "0993211";
+        let result = fetch_address(postal_code).unwrap();
+        let town_raw = &result.data[0].town_raw;
+        assert_eq!(town_raw, "東藻琴（北１区）");
+    }
+
+    /// This area has a unique case that includes `屋敷` for historical reason
+    #[test]
+    fn includes_yashiki() {
+        let postal_code = "4411336";
+        let result = fetch_address(postal_code).unwrap();
+        let town_raw = &result.data[0].town_raw;
+        assert_eq!(town_raw, "富岡（○○屋敷）");
+    }
 }
