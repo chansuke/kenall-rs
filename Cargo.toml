@@ -7,7 +7,7 @@ repository = "https://github.com/chansuke/kenall-rs"
 keywords = ["kenall", "cli", "api"]
 categories = ["command-line-utilities"]
 license = "MIT OR Apache-2.0"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["chansuke <moonset20@gmail.com>"]
 edition = "2018"
 
