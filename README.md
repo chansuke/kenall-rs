@@ -7,13 +7,19 @@ kenall-rs is an **UNOFFICIAL** command line tool for [KENALL](https://kenall.jp/
 ### From crates.io
 
 ```sh
-cargo install kenall-rs
+$ cargo install kenall-rs
 ```
 
 ### From latest main branch commit
 
 ```sh
-cargo install --git https://github.com/chansuke/kenall-rs --branch main
+$ cargo install --git https://github.com/chansuke/kenall-rs --branch main
+```
+
+### From Homebrew
+```sh
+$ brew tap chansuke/tap
+$ brew install chansuke/tap/kenall-rs
 ```
 
 ## Usage
