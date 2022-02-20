@@ -77,7 +77,7 @@ impl Ui for PostalCodeResponse {
         .bold(true);
 
         let _ = print_stdout(address_table);
-        Self::display_corporate(&self);
+        Self::display_corporate(self);
     }
 
     fn display_corporate(&self) {
