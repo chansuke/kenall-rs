@@ -60,7 +60,7 @@ mod tests {
         let postal_code = "1008105";
         let address = r#"
         {
-          "version": "2021-03-31",
+          "version": "2022-01-31",
           "data": [
             {
               "jisx0402": "13101",
