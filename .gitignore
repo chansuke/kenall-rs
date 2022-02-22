@@ -1,2 +1,5 @@
 /target
 .env
+.envrc
+Cargo.lock
+

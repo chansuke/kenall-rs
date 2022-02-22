@@ -3,6 +3,21 @@
 ## About The Project
 kenall-rs is an **UNOFFICIAL** command line tool for [KENALL](https://kenall.jp/) providing `REST API` that enables to search the addresses from postal code straightforward and efficient.
 
+## Setup
+
+```sh
+$ cp .env.example .env
+```
+
+or
+
+```
+$ cp .envrc.tempate .envrc
+$ direnv allow
+```
+
+and please set your [API key](https://kenall.jp/docs/account/api-key/)
+
 ## Installation
 ### From crates.io
 
