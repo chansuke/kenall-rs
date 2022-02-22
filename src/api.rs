@@ -49,7 +49,6 @@ pub fn fetch_address(postal_code: &str) -> Result<PostalCodeResponse, KenallErro
     Ok(result)
 }
 
-//ref: https://codepen.io/kenall/pen/NWbPYda
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -75,7 +74,7 @@ mod tests {
               "town": "大手町",
               "koaza": "",
               "kyoto_street": "",
-              "building": "",
+              "building": "新大手町ビル",
               "floor": "",
               "town_partial": false,
               "town_addressed_koaza": false,
