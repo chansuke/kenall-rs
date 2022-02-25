@@ -34,11 +34,11 @@
 pub mod api;
 pub mod cli;
 pub mod errors;
-pub mod model;
+pub mod models;
 pub mod ui;
 
 pub use crate::api::fetch_address;
 pub use crate::cli::run;
 pub use crate::errors::KenallError;
-pub use crate::model::PostalCodeResponse;
+pub use crate::models::PostalCodeResponse;
 pub use crate::ui::Ui;
