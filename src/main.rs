@@ -1,9 +1,9 @@
-use std::{error::Error, process};
+use std::process;
 
 use dotenv::dotenv;
 use structopt::{clap, StructOpt};
 
-use kenall_rs::{run, Ui};
+use kenall_rs::{run, KenallError, Ui};
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -19,7 +19,7 @@ struct Opt {
     pub postal_code: String,
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), KenallError> {
     dotenv().ok();
 
     let arg = Opt::from_args();
