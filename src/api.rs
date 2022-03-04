@@ -20,24 +20,24 @@
 
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
 
+use crate::load_config;
 use crate::{KenallError, PostalCodeResponse};
-
-/// This is a current base url for kenall API.
-/// Pease see the [detail](https://www.notion.so/API-47ab1a425d9e48aaad5b34b4f703c718#d371ccaa035840418ee2c35f23bb9dca)
-const BASE_URL: &str = "https://api.kenall.jp/v1/postalcode";
 
 /// User specific apikey as a token.
 /// You need to [signup](https://kenall.jp/signup) to grab the key.
 fn construct_headers() -> HeaderMap {
     let mut headers = HeaderMap::new();
-    let api_key = dotenv::var("API_KEY").expect("API_KEY must be set");
+    let config = load_config().unwrap();
+    let api_key = config.api_key;
     let token = format!("Token {}", api_key);
     headers.insert(AUTHORIZATION, HeaderValue::from_str(&token).unwrap());
     headers
 }
 
 pub fn fetch_address(postal_code: &str) -> Result<PostalCodeResponse, KenallError> {
-    let endpoint = format!("{}/{}", BASE_URL, postal_code);
+    let config = load_config().unwrap();
+    let path = "postalcode";
+    let endpoint = format!("{}/{}/{}", config.base_url, path, postal_code);
 
     let client = reqwest::blocking::Client::new();
     let result = client
@@ -59,7 +59,7 @@ mod tests {
         let postal_code = "1008105";
         let address = r#"
         {
-          "version": "2022-01-31",
+          "version": "2022-02-28",
           "data": [
             {
               "jisx0402": "13101",
