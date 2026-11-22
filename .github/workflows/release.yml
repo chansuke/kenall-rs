@@ -14,11 +14,6 @@ jobs:
       contents: write
     strategy:
       matrix:
-        os:
-          - "ubuntu-latest"
-          - "windows-latest"
-          - "macos-latest"
-        rust: [stable]
         include:
           - os: ubuntu-latest
             artifact_prefix: linux
@@ -28,9 +23,15 @@ jobs:
             artifact_prefix: windows
             target: x86_64-pc-windows-msvc
             binary_postfix: ".exe"
-          - os: macos-latest
+          # macos-latest is arm64, so the x86_64 build that the Homebrew formula
+          # downloads as kenall-rs-macos.tar.gz needs an Intel runner.
+          - os: macos-26-intel
             artifact_prefix: macos
             target: x86_64-apple-darwin
+            binary_postfix: ""
+          - os: macos-latest
+            artifact_prefix: macos-arm64
+            target: aarch64-apple-darwin
             binary_postfix: ""
     runs-on: ${{ matrix.os }}
 
@@ -41,12 +42,8 @@ jobs:
       - name: Installing Rust toolchain
         uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master
         with:
-          toolchain: ${{ matrix.rust }}
+          toolchain: stable
           targets: ${{ matrix.target }}
-
-      - name: Install openssl for macos
-        if: matrix.os == 'macos-latest'
-        run: brew install openssl@1.1
 
       - name: Install Ubuntu dependencies
         if: matrix.os == 'ubuntu-latest'
