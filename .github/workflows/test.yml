@@ -48,4 +48,3 @@ jobs:
     - run: cargo test
       env:
         API_KEY: ${{ secrets.API_KEY }}
-    - uses: codecov/codecov-action@v1.2.1
