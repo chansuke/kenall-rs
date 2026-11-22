@@ -1,0 +1,16 @@
+name: Debug kenall API response
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show status and body for one postal code
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          echo "key length: ${#API_KEY}"
+          curl -sS -m 20 -w '\nHTTP %{http_code}\n' -H "Authorization: Token $API_KEY" https://api.kenall.jp/v1/postalcode/1008105
