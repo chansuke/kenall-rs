@@ -5,8 +5,13 @@ on:
     tags:
       - 'v*.*.*'
 
+permissions:
+  contents: read
+
 jobs:
   publish:
+    permissions:
+      contents: write
     strategy:
       matrix:
         os:
@@ -88,6 +93,9 @@ jobs:
 
   set-release-note:
     name: Set Relase Note
+    permissions:
+      contents: write
+      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
