@@ -52,12 +52,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y -qq pkg-config libssl-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
 
-      - uses: actions/cache@v2
-        with:
-          path: |
-            target
-          key: ${{ runner.os }}-cargo-publish-${{ matrix.toolchain }}-${{ hashFiles('**/Cargo.lock') }}
-
       - name: Run cargo check
         uses: actions-rs/cargo@v1
         with:
