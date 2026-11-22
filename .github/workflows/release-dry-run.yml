@@ -1,0 +1,75 @@
+name: Release dry run (temporary)
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_prefix: linux
+            target: x86_64-unknown-linux-gnu
+            binary_postfix: ""
+          - os: windows-latest
+            artifact_prefix: windows
+            target: x86_64-pc-windows-msvc
+            binary_postfix: ".exe"
+          # macos-latest is arm64, so the x86_64 build that the Homebrew formula
+          # downloads as kenall-rs-macos.tar.gz needs an Intel runner.
+          - os: macos-26-intel
+            artifact_prefix: macos
+            target: x86_64-apple-darwin
+            binary_postfix: ""
+          - os: macos-latest
+            artifact_prefix: macos-arm64
+            target: aarch64-apple-darwin
+            binary_postfix: ""
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Installing Rust toolchain
+        uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master
+        with:
+          toolchain: stable
+          targets: ${{ matrix.target }}
+
+      - name: Install Ubuntu dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y -qq pkg-config libssl-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+
+      - name: Run cargo check
+        run: cargo check --verbose
+
+      - name: Run cargo build
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Packaging final binary
+        shell: bash
+        run: |
+          cd target/${{ matrix.target }}/release
+          strip kenall-rs${{ matrix.binary_postfix }}
+          tar czvf kenall-rs-${{ matrix.artifact_prefix }}.tar.gz kenall-rs${{ matrix.binary_postfix }}
+          if [[ ${{ runner.os }} == 'Windows' ]]; then
+            certutil -hashfile kenall-rs-${{ matrix.artifact_prefix }}.tar.gz sha256 | grep -E '[A-Fa-f0-9]{64}' > kenall-rs-${{ matrix.artifact_prefix }}.sha256
+          else
+            shasum -a 256 kenall-rs-${{ matrix.artifact_prefix }}.tar.gz > kenall-rs-${{ matrix.artifact_prefix }}.sha256
+          fi
+      - name: Show packaged files
+        shell: bash
+        run: |
+          cd "target/$TARGET/release"
+          for f in kenall-rs-*; do echo "$f"; done
+          cat ./*.sha256
+          file "kenall-rs$POSTFIX" || true
+        env:
+          TARGET: ${{ matrix.target }}
+          POSTFIX: ${{ matrix.binary_postfix }}
