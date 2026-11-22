@@ -19,6 +19,7 @@
 //! ```
 
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
+use serde::Deserialize;
 
 use crate::{KenallError, PostalCodeResponse};
 
@@ -48,13 +49,30 @@ fn fetch_address_from(
     let endpoint = format!("{}/{}", base_url, postal_code);
 
     let client = reqwest::blocking::Client::new();
-    let result = client
+    let response = client
         .get(&endpoint)
         .headers(construct_headers(api_key))
-        .send()?
-        .json::<PostalCodeResponse>()?;
+        .send()?;
 
-    Ok(result)
+    let status = response.status();
+    if !status.is_success() {
+        let body = response.text()?;
+        let detail = serde_json::from_str::<ErrorBody>(&body)
+            .map(|error| error.detail)
+            .unwrap_or(body);
+        return Err(KenallError::Api {
+            status: status.as_u16(),
+            detail,
+        });
+    }
+
+    Ok(response.json::<PostalCodeResponse>()?)
+}
+
+/// The body of an error response, such as `{"detail":"不正なトークンです。"}`.
+#[derive(Deserialize)]
+struct ErrorBody {
+    detail: String,
 }
 
 #[cfg(test)]
@@ -81,6 +99,24 @@ mod tests {
         mock.assert();
         let expected: PostalCodeResponse = serde_json::from_str(RECORDED_1008105).unwrap();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn reports_the_detail_of_an_api_error() {
+        let mut server = mockito::Server::new();
+        server
+            .mock("GET", "/1008105")
+            .with_status(402)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"detail":"トライアル期間が終了しているか、課金に失敗しています。"}"#)
+            .create();
+
+        let error = fetch_address_from(&server.url(), "test-key", "1008105").unwrap_err();
+
+        assert_eq!(
+            error.to_string(),
+            "Kenall API returned 402: トライアル期間が終了しているか、課金に失敗しています。"
+        );
     }
 
     #[test]

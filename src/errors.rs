@@ -6,4 +6,6 @@ use thiserror::Error;
 pub enum KenallError {
     #[error("Failed to get response: {0}")]
     Reqwest(#[from] reqwest::Error),
+    #[error("Kenall API returned {status}: {detail}")]
+    Api { status: u16, detail: String },
 }
