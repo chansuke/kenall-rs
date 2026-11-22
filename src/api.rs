@@ -55,6 +55,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn standard_postalcode_with_corporation() {
         let postal_code = "1008105";
         let address = r#"
@@ -100,6 +101,7 @@ mod tests {
     // https://twitter.com/tchov/status/1358752899522695178
     // Feb 12: Seems API fixed the problem.
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn koaza_exception() {
         let postal_code = "4850801";
         let result = fetch_address(postal_code).unwrap();
@@ -107,6 +109,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn separated_block() {
         let postal_code = "0282504";
         let result = fetch_address(postal_code).unwrap();
@@ -118,6 +121,7 @@ mod tests {
     /// You can find the good example in the [demo page](https://codepen.io/kenall/pen/NWbPYda).
     /// > 京都の通り名を含む例
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_kyoto_streetname_one() {
         let postal_code = "6048063";
         let result = fetch_address(postal_code).unwrap();
@@ -125,6 +129,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_kyoto_streetname_two() {
         let postal_code = "6048012";
         let result = fetch_address(postal_code).unwrap();
@@ -132,6 +137,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_name_of_building_and_floor() {
         let postal_code = "1046001";
         let result = fetch_address(postal_code).unwrap();
@@ -142,6 +148,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_individual_corporate_number() {
         let postal_code = "1008926";
         let result = fetch_address(postal_code).unwrap();
@@ -153,6 +160,7 @@ mod tests {
 
     /// Parse `甲、乙`
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn parse_comma_delimiter() {
         let postal_code = "7614103";
         let result = fetch_address(postal_code).unwrap();
@@ -161,6 +169,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn parse_north_award() {
         let postal_code = "0993211";
         let result = fetch_address(postal_code).unwrap();
@@ -170,6 +179,7 @@ mod tests {
 
     /// This area has a unique case that includes `屋敷` for historical reason
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn includes_yashiki() {
         let postal_code = "4411336";
         let result = fetch_address(postal_code).unwrap();

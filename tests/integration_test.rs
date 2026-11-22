@@ -3,6 +3,7 @@ use predicates::prelude::*;
 use std::process::Command;
 
 #[test]
+#[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
 fn include_none_didit() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("kenall-rs")?;
     cmd.arg("100-0012");
@@ -12,6 +13,7 @@ fn include_none_didit() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
+#[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
 fn normal_eight_digit() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("kenall-rs")?;
     cmd.arg("1000001");
@@ -21,6 +23,7 @@ fn normal_eight_digit() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
+#[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
 fn kyoto_street_address() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("kenall-rs")?;
     cmd.arg("6048012");
@@ -31,6 +34,7 @@ fn kyoto_street_address() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 #[test]
+#[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
 fn no_result_found() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = Command::cargo_bin("kenall-rs")?;
     cmd.arg("9999999");
