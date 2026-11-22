@@ -28,21 +28,29 @@ const BASE_URL: &str = "https://api.kenall.jp/v1/postalcode";
 
 /// User specific apikey as a token.
 /// You need to [signup](https://kenall.jp/signup) to grab the key.
-fn construct_headers() -> HeaderMap {
+fn construct_headers(api_key: &str) -> HeaderMap {
     let mut headers = HeaderMap::new();
-    let api_key = dotenv::var("API_KEY").expect("API_KEY must be set");
     let token = format!("Token {}", api_key);
     headers.insert(AUTHORIZATION, HeaderValue::from_str(&token).unwrap());
     headers
 }
 
 pub fn fetch_address(postal_code: &str) -> Result<PostalCodeResponse, KenallError> {
-    let endpoint = format!("{}/{}", BASE_URL, postal_code);
+    let api_key = dotenv::var("API_KEY").expect("API_KEY must be set");
+    fetch_address_from(BASE_URL, &api_key, postal_code)
+}
+
+fn fetch_address_from(
+    base_url: &str,
+    api_key: &str,
+    postal_code: &str,
+) -> Result<PostalCodeResponse, KenallError> {
+    let endpoint = format!("{}/{}", base_url, postal_code);
 
     let client = reqwest::blocking::Client::new();
     let result = client
         .get(&endpoint)
-        .headers(construct_headers())
+        .headers(construct_headers(api_key))
         .send()?
         .json::<PostalCodeResponse>()?;
 
@@ -53,6 +61,27 @@ pub fn fetch_address(postal_code: &str) -> Result<PostalCodeResponse, KenallErro
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
+
+    /// A response recorded from the live API on 2022-01-31.
+    const RECORDED_1008105: &str = r#"{"version":"2022-01-31","data":[{"jisx0402":"13101","old_code":"100","postal_code":"1008105","prefecture_kana":"","city_kana":"","town_kana":"","town_kana_raw":"","prefecture":"東京都","city":"千代田区","town":"大手町","koaza":"","kyoto_street":"","building":"新大手町ビル","floor":"","town_partial":false,"town_addressed_koaza":false,"town_chome":false,"town_multi":false,"town_raw":"大手町","corporation":{"name":"チッソ　株式会社","name_kana":"チツソ　カブシキガイシヤ","block_lot":"２丁目２－１（新大手町ビル）","post_office":"銀座","code_type":0}}]}"#;
+
+    #[test]
+    fn sends_the_token_and_parses_the_response() {
+        let mut server = mockito::Server::new();
+        let mock = server
+            .mock("GET", "/1008105")
+            .match_header("authorization", "Token test-key")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(RECORDED_1008105)
+            .create();
+
+        let result = fetch_address_from(&server.url(), "test-key", "1008105").unwrap();
+
+        mock.assert();
+        let expected: PostalCodeResponse = serde_json::from_str(RECORDED_1008105).unwrap();
+        assert_eq!(result, expected);
+    }
 
     #[test]
     #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]

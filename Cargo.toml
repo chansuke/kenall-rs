@@ -26,6 +26,9 @@ cli-table = "0.4"
 assert_cmd = "1.0.3"
 predicates = "1"
 
+[dev-dependencies]
+mockito = "1.7"
+
 [[bin]]
 bench = false
 path = "src/main.rs"
