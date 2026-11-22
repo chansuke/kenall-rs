@@ -19,6 +19,7 @@
 //! ```
 
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION};
+use serde::Deserialize;
 
 use crate::{KenallError, PostalCodeResponse};
 
@@ -28,25 +29,50 @@ const BASE_URL: &str = "https://api.kenall.jp/v1/postalcode";
 
 /// User specific apikey as a token.
 /// You need to [signup](https://kenall.jp/signup) to grab the key.
-fn construct_headers() -> HeaderMap {
+fn construct_headers(api_key: &str) -> HeaderMap {
     let mut headers = HeaderMap::new();
-    let api_key = dotenv::var("API_KEY").expect("API_KEY must be set");
     let token = format!("Token {}", api_key);
     headers.insert(AUTHORIZATION, HeaderValue::from_str(&token).unwrap());
     headers
 }
 
 pub fn fetch_address(postal_code: &str) -> Result<PostalCodeResponse, KenallError> {
-    let endpoint = format!("{}/{}", BASE_URL, postal_code);
+    let api_key = dotenv::var("API_KEY").expect("API_KEY must be set");
+    fetch_address_from(BASE_URL, &api_key, postal_code)
+}
+
+fn fetch_address_from(
+    base_url: &str,
+    api_key: &str,
+    postal_code: &str,
+) -> Result<PostalCodeResponse, KenallError> {
+    let endpoint = format!("{}/{}", base_url, postal_code);
 
     let client = reqwest::blocking::Client::new();
-    let result = client
+    let response = client
         .get(&endpoint)
-        .headers(construct_headers())
-        .send()?
-        .json::<PostalCodeResponse>()?;
+        .headers(construct_headers(api_key))
+        .send()?;
 
-    Ok(result)
+    let status = response.status();
+    if !status.is_success() {
+        let body = response.text()?;
+        let detail = serde_json::from_str::<ErrorBody>(&body)
+            .map(|error| error.detail)
+            .unwrap_or(body);
+        return Err(KenallError::Api {
+            status: status.as_u16(),
+            detail,
+        });
+    }
+
+    Ok(response.json::<PostalCodeResponse>()?)
+}
+
+/// The body of an error response, such as `{"detail":"不正なトークンです。"}`.
+#[derive(Deserialize)]
+struct ErrorBody {
+    detail: String,
 }
 
 #[cfg(test)]
@@ -54,7 +80,47 @@ mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
 
+    /// A response recorded from the live API on 2022-01-31.
+    const RECORDED_1008105: &str = r#"{"version":"2022-01-31","data":[{"jisx0402":"13101","old_code":"100","postal_code":"1008105","prefecture_kana":"","city_kana":"","town_kana":"","town_kana_raw":"","prefecture":"東京都","city":"千代田区","town":"大手町","koaza":"","kyoto_street":"","building":"新大手町ビル","floor":"","town_partial":false,"town_addressed_koaza":false,"town_chome":false,"town_multi":false,"town_raw":"大手町","corporation":{"name":"チッソ　株式会社","name_kana":"チツソ　カブシキガイシヤ","block_lot":"２丁目２－１（新大手町ビル）","post_office":"銀座","code_type":0}}]}"#;
+
     #[test]
+    fn sends_the_token_and_parses_the_response() {
+        let mut server = mockito::Server::new();
+        let mock = server
+            .mock("GET", "/1008105")
+            .match_header("authorization", "Token test-key")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(RECORDED_1008105)
+            .create();
+
+        let result = fetch_address_from(&server.url(), "test-key", "1008105").unwrap();
+
+        mock.assert();
+        let expected: PostalCodeResponse = serde_json::from_str(RECORDED_1008105).unwrap();
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn reports_the_detail_of_an_api_error() {
+        let mut server = mockito::Server::new();
+        server
+            .mock("GET", "/1008105")
+            .with_status(402)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"detail":"トライアル期間が終了しているか、課金に失敗しています。"}"#)
+            .create();
+
+        let error = fetch_address_from(&server.url(), "test-key", "1008105").unwrap_err();
+
+        assert_eq!(
+            error.to_string(),
+            "Kenall API returned 402: トライアル期間が終了しているか、課金に失敗しています。"
+        );
+    }
+
+    #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn standard_postalcode_with_corporation() {
         let postal_code = "1008105";
         let address = r#"
@@ -100,6 +166,7 @@ mod tests {
     // https://twitter.com/tchov/status/1358752899522695178
     // Feb 12: Seems API fixed the problem.
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn koaza_exception() {
         let postal_code = "4850801";
         let result = fetch_address(postal_code).unwrap();
@@ -107,6 +174,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn separated_block() {
         let postal_code = "0282504";
         let result = fetch_address(postal_code).unwrap();
@@ -118,6 +186,7 @@ mod tests {
     /// You can find the good example in the [demo page](https://codepen.io/kenall/pen/NWbPYda).
     /// > 京都の通り名を含む例
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_kyoto_streetname_one() {
         let postal_code = "6048063";
         let result = fetch_address(postal_code).unwrap();
@@ -125,6 +194,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_kyoto_streetname_two() {
         let postal_code = "6048012";
         let result = fetch_address(postal_code).unwrap();
@@ -132,6 +202,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_name_of_building_and_floor() {
         let postal_code = "1046001";
         let result = fetch_address(postal_code).unwrap();
@@ -142,6 +213,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn include_individual_corporate_number() {
         let postal_code = "1008926";
         let result = fetch_address(postal_code).unwrap();
@@ -153,6 +225,7 @@ mod tests {
 
     /// Parse `甲、乙`
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn parse_comma_delimiter() {
         let postal_code = "7614103";
         let result = fetch_address(postal_code).unwrap();
@@ -161,6 +234,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn parse_north_award() {
         let postal_code = "0993211";
         let result = fetch_address(postal_code).unwrap();
@@ -170,6 +244,7 @@ mod tests {
 
     /// This area has a unique case that includes `屋敷` for historical reason
     #[test]
+    #[ignore = "calls the live kenall API; needs an API_KEY with an active plan"]
     fn includes_yashiki() {
         let postal_code = "4411336";
         let result = fetch_address(postal_code).unwrap();
