@@ -34,11 +34,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install GNU tar for macos
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install gnu-tar
-          echo "/usr/local/opt/gnu-tar/libexec/gnubin" >> $GITHUB_PATH
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
